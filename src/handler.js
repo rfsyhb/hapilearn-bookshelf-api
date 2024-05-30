@@ -113,26 +113,26 @@ const addBookHandler = (request, h) => {
 //   },
 // });
 
-const getAllBooksHandler = (request, h) => {
+const getAllBooksHandler = (request) => {
   const { name, reading, finished } = request.query;
 
   let filteredBooks = books;
 
   if (name) {
-    filteredBooks = filteredBooks.filter((book) =>
-      book.name.toLowerCase().includes(name.toLowerCase())
+    filteredBooks = filteredBooks.filter(
+      (book) => book.name.toLowerCase().includes(name.toLowerCase()),
     );
   }
 
   if (reading) {
     filteredBooks = filteredBooks.filter(
-      (book) => book.reading === (reading === '1')
+      (book) => book.reading === (reading === '1'),
     );
   }
 
   if (finished) {
     filteredBooks = filteredBooks.filter(
-      (book) => book.finished === (finished === '1')
+      (book) => book.finished === (finished === '1'),
     );
   }
 
@@ -212,7 +212,7 @@ const editBookByIdHandler = (request, h) => {
     if (!name) {
       const response = h.response({
         status: 'fail',
-        message: 'Gagal memperbarui buku. Id tidak ditemukan',
+        message: 'Gagal memperbarui buku. Mohon isi nama buku',
       });
 
       response.code(400);

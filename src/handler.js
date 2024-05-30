@@ -19,22 +19,6 @@
  * 404 jika '!id'
  * 200 jika berhasil
  *
- *
- *
- * {
-    "id": "Qbax5Oy7L8WKf74l",
-    "name": "Buku A",
-    "year": 2010,
-    "author": "John Doe",
-    "summary": "Lorem ipsum dolor sit amet",
-    "publisher": "Dicoding Indonesia",
-    "pageCount": 100,
-    "readPage": 25,
-    "finished": false,
-    "reading": false,
-    "insertedAt": "2021-03-04T09:11:44.598Z",
-    "updatedAt": "2021-03-04T09:11:44.598Z"
-}
  */
 
 const { nanoid } = require('nanoid');
@@ -122,12 +106,43 @@ const addBookHandler = (request, h) => {
   return response;
 };
 
-const getAllBooksHandler = () => ({
-  status: 'success',
-  data: {
-    books,
-  },
-});
+// const getAllBooksHandler = () => ({
+//   status: 'success',
+//   data: {
+//     books,
+//   },
+// });
+
+const getAllBooksHandler = (request, h) => {
+  const { name, reading, finished } = request.query;
+
+  let filteredBooks = books;
+
+  if (name) {
+    filteredBooks = filteredBooks.filter((book) =>
+      book.name.toLowerCase().includes(name.toLowerCase())
+    );
+  }
+
+  if (reading) {
+    filteredBooks = filteredBooks.filter(
+      (book) => book.reading === (reading === '1')
+    );
+  }
+
+  if (finished) {
+    filteredBooks = filteredBooks.filter(
+      (book) => book.finished === (finished === '1')
+    );
+  }
+
+  return {
+    status: 'success',
+    data: {
+      books: filteredBooks,
+    },
+  };
+};
 
 const getBookByIdHandler = (request, h) => {
   const { id } = request.params;

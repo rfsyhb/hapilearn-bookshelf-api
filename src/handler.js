@@ -139,23 +139,30 @@ const getAllBooksHandler = (request, h) => {
   return {
     status: 'success',
     data: {
-      books: filteredBooks,
+      books: filteredBooks.map((book) => ({
+        id: book.id,
+        name: book.name,
+        publisher: book.publisher,
+      })),
     },
   };
 };
 
 const getBookByIdHandler = (request, h) => {
-  const { id } = request.params;
+  const { bookId } = request.params;
 
-  const book = books.filter((b) => b.id === id)[0];
+  const book = books.filter((b) => b.id === bookId)[0];
 
   if (book !== undefined) {
-    return {
+    const response = h.response({
       status: 'success',
       data: {
         book,
       },
-    };
+    });
+
+    response.code(200);
+    return response;
   }
 
   // if gagal
@@ -170,7 +177,7 @@ const getBookByIdHandler = (request, h) => {
 
 // ubah
 const editBookByIdHandler = (request, h) => {
-  const { id } = request.params;
+  const { bookId } = request.params;
 
   const {
     name,
@@ -185,7 +192,7 @@ const editBookByIdHandler = (request, h) => {
   const updatedAt = new Date().toISOString();
   const finished = pageCount === readPage;
 
-  const index = books.findIndex((book) => book.id === id);
+  const index = books.findIndex((book) => book.id === bookId);
 
   if (index !== -1) {
     books[index] = {
@@ -201,6 +208,16 @@ const editBookByIdHandler = (request, h) => {
       reading,
       updatedAt,
     };
+
+    if (!name) {
+      const response = h.response({
+        status: 'fail',
+        message: 'Gagal memperbarui buku. Id tidak ditemukan',
+      });
+
+      response.code(400);
+      return response;
+    }
 
     if (readPage > pageCount) {
       const response = h.response({
@@ -233,9 +250,9 @@ const editBookByIdHandler = (request, h) => {
 
 // hapus
 const deleteBookByIdHandler = (request, h) => {
-  const { id } = request.params;
+  const { bookId } = request.params;
 
-  const index = books.findIndex((book) => book.id === id);
+  const index = books.findIndex((book) => book.id === bookId);
 
   if (index !== -1) {
     books.splice(index, 1);
@@ -251,7 +268,7 @@ const deleteBookByIdHandler = (request, h) => {
 
   const response = h.response({
     status: 'fail',
-    message: 'Buku gagal dihapus. Id tidak ditemukan!',
+    message: 'Buku gagal dihapus. Id tidak ditemukan',
   });
 
   response.code(404);
